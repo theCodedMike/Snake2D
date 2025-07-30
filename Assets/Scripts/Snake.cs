@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum Direction
 {
@@ -9,6 +10,10 @@ public class Snake : MonoBehaviour
 {
     [Header("蛇尾")]
     public GameObject tailPrefab;
+    [Header("得分")]
+    public Text score;
+    [Header("游戏结束")]
+    public Text gameOver;
     
     private readonly float _moveFreq = 0.3f; // 每隔0.3秒移动一次
     private Vector3 _moveDir = Vector3.right; // 蛇头移动朝向
@@ -17,6 +22,7 @@ public class Snake : MonoBehaviour
 
     private SpawnFood _spawnFood;
     private bool _ateFood;
+    private int _score;
     
     private void Start()
     {
@@ -69,8 +75,17 @@ public class Snake : MonoBehaviour
         if (other.CompareTag("Food"))
         {
             _ateFood = true;
+            _score++;
+            score.text = $"分数: {_score}";
             _spawnFood.Spawn();
             Destroy(other.gameObject);
+        } else if (other.CompareTag("Snake") || other.CompareTag("Wall"))
+        {
+            print("游戏结束...");
+            gameOver.text = "!!!Game Over!!!";
+            _moveDir = Vector3.zero;
+            Time.timeScale = 0;
+            CancelInvoke();
         }
     }
 }
